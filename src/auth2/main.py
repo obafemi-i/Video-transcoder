@@ -5,10 +5,10 @@ from models import Base, User
 from database import engine, SessionLocal
 from schema import UserSchema, UserResponse
 from hashing import get_password_hash, verify_password
-from .routes import user
-from .token import create_access_token
+# from routes import user
+from jwt import create_access_token
+from oauth import get_current_user
 
-# from passlib.context import CryptContext
 
 app = FastAPI()
 
@@ -29,9 +29,6 @@ def get_db():
 def home():
     return {'message': 'welcome home'}
 
- 
-# pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 
 @app.post('/user')
 def create_user(request: UserSchema, db: Session= Depends(get_db)):
@@ -44,20 +41,24 @@ def create_user(request: UserSchema, db: Session= Depends(get_db)):
     return {'message': 'Account creation succesful!'}
 
 
-@app.get('/user', response_model=UserResponse)
-def get_users(db: Session= Depends(get_db)):
+@app.get('/user', response_model=list[UserResponse])
+def get_users(db: Session= Depends(get_db), current_user: UserSchema = Depends(get_current_user)):
     users = db.query(User).all()
     return users
 
+
 @app.get('/user/{id}', response_model=UserResponse)
-def get_user(id: int, db: Session= Depends(get_db)):
+def get_user(id: int, db: Session= Depends(get_db), current_user: UserSchema = Depends(get_current_user)):
     user = db.query(User).filter(User.id == id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, 
+                            detail='No user with such ID')
     return user
 
 
-@app.post('/login', response_model=UserResponse)
-def login(request: OAuth2PasswordRequestForm= Depends(), db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == request.email).first()
+@app.post('/login')
+def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == request.username).first()
 
     if not user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, 
