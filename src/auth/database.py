@@ -7,8 +7,6 @@ config = dotenv_values()
 
 
 DATABASE_URL = config['DATABASE_URL']
-# print(DATABASE_URL)
-DATABASE_URL = "mysql+mysqlconnector://root@localhost:3306/auth"
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
