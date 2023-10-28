@@ -1,8 +1,9 @@
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
 # from . schema import TokenData
-from schema import TokenData
+from .schema import TokenData
 from dotenv import dotenv_values
+from typing import Optional
 
 config = dotenv_values()
 
@@ -12,7 +13,8 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
+# def create_access_token(data: dict, expires_delta: timedelta | None = None):
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta

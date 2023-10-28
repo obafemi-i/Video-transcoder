@@ -1,13 +1,14 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from models import Base, User
-from database import engine, SessionLocal
-from schema import UserSchema, UserResponse
-from hashing import get_password_hash, verify_password
+from .models import Base, User
+from .database import engine, SessionLocal
+from .schema import UserSchema, UserResponse
+from .hashing import get_password_hash, verify_password
 # from routes import user
-from jwt import create_access_token
-from oauth import get_current_user
+from .jwt import create_access_token
+from .oauth import get_current_user
+from typing import List
 
 
 app = FastAPI()
@@ -41,7 +42,7 @@ def create_user(request: UserSchema, db: Session= Depends(get_db)):
     return {'message': 'Account creation succesful!'}
 
 
-@app.get('/user', response_model=list[UserResponse])
+@app.get('/user', response_model=List[UserResponse])
 def get_users(db: Session= Depends(get_db), current_user: UserSchema = Depends(get_current_user)):
     users = db.query(User).all()
     return users
