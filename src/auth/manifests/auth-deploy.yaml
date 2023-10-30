@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: auth
-          image: obafemi/auth-service:newlatest
+          image: obafemi/auth-service:new
           ports:
             - containerPort: 5000
           envFrom:
