@@ -8,7 +8,7 @@ from .hashing import get_password_hash, verify_password
 # from routes import user
 from .jwt import create_access_token
 from .oauth import get_current_user
-from typing import List
+from typing import List, Optional, Annotated
 
 
 app = FastAPI()
