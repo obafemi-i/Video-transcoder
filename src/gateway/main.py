@@ -1,24 +1,22 @@
 from fastapi import FastAPI
 from pymongo import MongoClient
 from dotenv import dotenv_values
+import pika
+
+import gridfs
 from contextlib import asynccontextmanager
 
 
 config = dotenv_values()
-# print(config['ATLAS_URI'])
-# uri = "mongodb+srv://Obafemi:obafemi@cluster1.esmjidp.mongodb.net/?retryWrites=true&w=majority"
-
-# print('uri', uri)
-
-# if config['ATLAS_URI'] == uri:
-#     print(True)
 
 def start_db():
     try:
-        mongodb_client = MongoClient(config["ATLAS"])
+        mongodb_client = MongoClient(config["ATLAS_URI"])
         print('Connected to mongodb database!')
         database = mongodb_client[config['DB_NAME']]
-        
+        fs = gridfs.GridFS(database)
+        return fs
+
     except Exception as e:
         print(e)
 
@@ -40,4 +38,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+
+connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq'))
+channel = connection.channel()
 
