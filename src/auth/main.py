@@ -14,7 +14,7 @@ import hashing
 import jwt_tokens
 # from .oauth import get_current_user
 import oauth
-from typing import List
+# from typing import List
 
 
 app = FastAPI()
@@ -48,7 +48,7 @@ def create_user(request: schema.UserSchema, db: Session= Depends(get_db)):
     return {'message': 'Account creation succesful!'}
 
 
-@app.get('/user', response_model=List[schema.UserResponse])
+@app.get('/user', response_model=list[schema.UserResponse])
 def get_users(db: Session= Depends(get_db), current_user: schema.UserSchema = Depends(oauth.get_current_user)):
     users = db.query(models.User).all()
     return users
