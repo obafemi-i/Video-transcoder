@@ -32,15 +32,21 @@ def close_db():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    start_db()
+    # start_db()
+    mongodb_client = MongoClient(config['ATLAS_URI'])
+    print('Connected to mongodb database!')
+    # database = mongodb_client[config['DB_NAME']]
 
     yield
 
-    close_db()
+    mongodb_client.close()
+    print('connection closed')
+
+    # close_db()
 
 
 app = FastAPI(lifespan=lifespan)
-app = FastAPI()
+# app = FastAPI()
 
 
 # connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq'))
@@ -56,9 +62,9 @@ def get_access(request: Login):
 
     datad = {'username':data, 'password': passw}
 
-    # response = requests.post(url)
     response = requests.post(url, data=datad)
 
     print('response', response.json()['access_token'])
 
     return response.json()
+
