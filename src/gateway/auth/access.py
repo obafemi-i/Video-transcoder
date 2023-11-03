@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException, Depends, Form, status
+from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-import requests
+
 from jose import jwt, ExpiredSignatureError, JWTError
 from dotenv import load_dotenv
+import requests
 
 router = APIRouter()
 config = load_dotenv()
