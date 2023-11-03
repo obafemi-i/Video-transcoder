@@ -2,13 +2,15 @@ from fastapi import APIRouter, HTTPException, Depends, Form, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import requests
 from jose import jwt, ExpiredSignatureError, JWTError
+from dotenv import load_dotenv
 
 router = APIRouter()
+config = load_dotenv()
 
 # Secret key to sign and verify JWT tokens
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
+SECRET_KEY = config['SECRET_KEY']
 ALGORITHM = "HS256"
-AUTH_SERVICE_URL = "http://127.0.0.1:8080/login" 
+AUTH_SERVICE_URL = config['AUTH_SERVICE_URL'] 
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")

@@ -24,13 +24,13 @@ async def lifespan(app: FastAPI):
     # app start
     app.mongodb_client = MongoClient(config['ATLAS_URI'])
     app.database = app.mongodb_client[config['DB_NAME']]
-    print('Connected to mongodb database!')
+    print('Connected to mongodb database.')
 
     yield
 
     # app close
     app.mongodb_client.close()
-    print('Connection closed')
+    print('Connection closed.')
 
 
 app = FastAPI(lifespan=lifespan)
