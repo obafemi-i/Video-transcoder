@@ -5,7 +5,6 @@ from jose import jwt, ExpiredSignatureError, JWTError
 
 router = APIRouter()
 
-
 # Secret key to sign and verify JWT tokens
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
@@ -19,13 +18,12 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     # Function to get the current user from the token
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        # email: str = payload.get("sub")
-        # print(payload)
         return payload.get('sub')
     except ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired")
     except JWTError:
         raise HTTPException(status_code=401, detail="Could not validate credentials")
+
 
 
 @router.post("/login")

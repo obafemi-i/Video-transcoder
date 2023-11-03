@@ -19,24 +19,6 @@ redis_connect = get_redis_connection(
 )
 
 
-def start_db():
-    try:
-        mongodb_client = MongoClient(config['ATLAS_URI'])
-        print('Connected to mongodb database!')
-        database = mongodb_client[config['DB_NAME']]
-        fs = gridfs.GridFS(database)
-        return fs
-
-    except Exception as e:
-        print(e)
-
-
-def close_db():
-    mongodb_client = MongoClient(config['ATLAS_URI'])
-    mongodb_client.close()
-    print('connection closed')
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # app start
@@ -51,8 +33,8 @@ async def lifespan(app: FastAPI):
     print('Connection closed')
 
 
-# app = FastAPI(lifespan=lifespan)
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
+# app = FastAPI()
 app.include_router(router)
 
 
@@ -63,16 +45,20 @@ async def upload_file(request: Request, file: UploadFile = File(...), current_us
                             detail='No file provided.')
     
 
-    
-    fs = gridfs.GridFS(request.app.database)
+    fs = gridfs.GridFS(app.database)
+
     try:
-        file_id = fs.put(file)
-    except:
+        file_id = await fs.put(file)
+        print(file_id)
+        # print(await fs.get(file_id))
+
+    except Exception as e:
+        print(e)
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail='Something went wrong, please try again.')
     
     queue_message = {
-        'Video id': file_id,
+        'Video id': str(file_id),
         'Mp3 id': None,
         'User': current_user
     }
